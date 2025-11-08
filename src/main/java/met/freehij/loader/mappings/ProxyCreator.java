@@ -362,6 +362,7 @@ public class ProxyCreator {
         }catch(Exception e) {
         	throw new RuntimeException(e);
         }*/
+        byte[] bts = cw.toByteArray();
         return bts;
 	}
 }
