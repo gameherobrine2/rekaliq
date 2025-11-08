@@ -1,5 +1,6 @@
 package met.freehij.kareliq.util;
 
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ public class NotificationUtils {
     }
 
     public static void drawNotifications(InjectionHelper helper) {
+    	Minecraft mc = Minecraft.getMinecraft();
         try {
             int height = Utils.createScaledResolution(InjectionHelper.getMinecraft()).invoke("getScaledHeight").getInt();
             int width = Utils.createScaledResolution(InjectionHelper.getMinecraft()).invoke("getScaledWidth").getInt();
@@ -28,7 +30,7 @@ public class NotificationUtils {
                 for (Notification n : notifications) {
                     if (i > 4) return;
                     helper.getSelf().invoke("drawRect", width - 2, height - 2 - (i * 24), width - 250, height - 24 - (i * 24), 0xaa000000);
-                    InjectionHelper.getMinecraft().getField("fontRenderer").invoke("drawStringWithShadow", n.text, width - 246, height - 17 - (i * 24), 0xffffff);
+                    mc.fontRenderer().drawStringWithShadow(n.text, width - 246, height - 17 - (i * 24), 0xffffff);
                     i++;
                 }
             }

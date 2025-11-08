@@ -22,7 +22,6 @@ public class Creator {
 		}
 	}
 	
-	
 	public static Method PROXY_CREATOR;
 	static{
 		Method[] ms = Creator.class.getMethods();
@@ -37,17 +36,21 @@ public class Creator {
 		}
 		if(PROXY_CREATOR == null) throw new RuntimeException("PROXY_CREATOR not found - proxy generation wont work!");
 	}
+	
+	public static <T> T proxy(Object instance, Class<T> clz) {
+		return proxy(instance, clz, true);
+	}
+	
 	/**
 	 * Get proxy for an instance. Attempts to initialize one if proxy not found
 	 * 
 	 * Be careful when changing number of parameters or their types - it will most likely break generated proxies
 	 */
-	public static <T> T proxy(Object instance, Class<T> clz) {
-		String s = proxyName(clz);
-		if(instance == null) return null;
+	public static <T> T proxy(Object instance, Class<T> clz, boolean nullIsNull) {
 		try {
-			Class clz2 = classLoader.loadClass(s);
-			return (T) clz2.getConstructor(Object.class).newInstance(instance);
+			ProxyCreator s = proxyCreator(clz);
+			if(instance == null && nullIsNull) return null;
+			return (T) s.construct(instance);
 		}catch(Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -63,18 +66,20 @@ public class Creator {
 		return proxyCreator(clz).clzName;
 	}
 	
-	private static ProxyCreator initProxy(Class<?> clz) {
+	private static ProxyCreator initProxy(Class<?> clz){
 		ProxyCreator px = ProxyCreator.create(clz);
 		clz2proxyCreator.put(clz, px); //must be added into the array before the generation started
 		byte[] arr = px.bytes();
-		classLoader._defineClass(px.clzName, arr, 0, arr.length);
+		Class<?> cc = classLoader._defineClass(px.clzName, arr, 0, arr.length);
+		try {
+			px.constructor = cc.getConstructor(Object.class);
+		} catch (NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException("Failed to get constructor!");
+		}
 		return px;
 	}
 	
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		Minecraft mc = proxy(Cliff.theCliff, Minecraft.class);
-		mc.cliffCnt(1003);
-		mc.theMinecraft().parentCliff(proxy(new Cliff(), Minecraft.class));
-		mc.printStaticCliff();
+		
 	}
 }

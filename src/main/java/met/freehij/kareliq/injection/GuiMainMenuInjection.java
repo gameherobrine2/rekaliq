@@ -3,25 +3,26 @@ package met.freehij.kareliq.injection;
 import met.freehij.kareliq.util.BackgroundUtils;
 import met.freehij.loader.annotation.Inject;
 import met.freehij.loader.annotation.Injection;
+import met.freehij.loader.mappings.Creator;
+import met.freehij.loader.struct.GuiButton;
+import met.freehij.loader.struct.GuiMainMenu;
+import met.freehij.loader.struct.GuiScreen;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
-import met.freehij.loader.util.Reflector;
-
-import java.util.List;
 
 @Injection("GuiMainMenu")
 public class GuiMainMenuInjection {
     @Inject(method = "initGui")
     public static void initGui(InjectionHelper helper) throws ClassNotFoundException {
-        ((List) helper.getSelf().getField("controlList").get()).add(
-                InjectionHelper.getClazz("GuiButton").newInstance("IIIIILjava/lang/String;", 67,
-                        helper.getSelf().getField("width").getInt() - 102, 2, 100, 20, "Main menu settings").get());
+    	GuiMainMenu dis = Creator.proxy(helper.getSelf().get(), GuiMainMenu.class);
+    	dis.controlList().add(InjectionHelper.getClazz("GuiButton").newInstance("IIIIILjava/lang/String;", 67, dis.width() - 102, 2, 100, 20, "Main menu settings").get());
     }
 
     @Inject(method = "actionPerformed")
     public static void actionPerformed(InjectionHelper helper) throws InstantiationException, IllegalAccessException {
-        Object button = helper.getArg(1);
-        if (new Reflector(button.getClass(), button).getField("id").getInt() == 67) {
-            InjectionHelper.getMinecraft().invoke("displayGuiScreen", BackgroundUtils.guiEditMainMenu.newInstance());
+    	GuiButton button = Creator.proxy(helper.getArg(1), GuiButton.class);
+        if (button.id() == 67) {
+        	Minecraft.getMinecraft().displayGuiScreen(Creator.proxy(BackgroundUtils.guiEditMainMenu.newInstance(), GuiScreen.class));
         }
     }
 }

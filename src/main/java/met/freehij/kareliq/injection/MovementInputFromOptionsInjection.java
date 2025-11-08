@@ -6,6 +6,8 @@ import met.freehij.kareliq.module.movement.GuiWalk;
 import met.freehij.loader.annotation.Inject;
 import met.freehij.loader.annotation.Injection;
 import met.freehij.loader.constant.At;
+import met.freehij.loader.struct.EntityPlayerSP;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 import met.freehij.loader.util.Reflector;
 import org.lwjgl.input.Keyboard;
@@ -23,7 +25,7 @@ public class MovementInputFromOptionsInjection {
         if (GuiWalk.INSTANCE.isToggled()) {
             boolean disableWalk = false;
             try {
-                Class<?> currentScreen = InjectionHelper.getMinecraft().getField("currentScreen").getActualClass();
+                Class<?> currentScreen = Minecraft.getMinecraft().currentScreen()._cls();
                 Class<?> guiChatClass = InjectionHelper.getClazz("GuiChat").getActualClass();
                 Class<?> guiControlsClass = InjectionHelper.getClazz("GuiControls").getActualClass();
                 if (currentScreen.equals(guiChatClass) ||
@@ -43,13 +45,13 @@ public class MovementInputFromOptionsInjection {
             movementKeyStates[2] = left;
         }
         if (Flight.INSTANCE.isToggled()) {
-            Reflector player = InjectionHelper.getMinecraft().getField("thePlayer");
-            player.setField("onGround", true);
-            player.setField("motionY", 0.0D);
+        	EntityPlayerSP player = Minecraft.getMinecraft().thePlayer();
+        	player.onGround(true);
+        	player.motionY(0);
             if (movementKeyStates[4]) {
-                player.setField("motionY", 0.2D);
+            	player.motionY(0.2d);
             } else if (movementKeyStates[5]) {
-                player.setField("motionY", -0.2D);
+            	player.motionY(-0.2d);
             }
         }
     }

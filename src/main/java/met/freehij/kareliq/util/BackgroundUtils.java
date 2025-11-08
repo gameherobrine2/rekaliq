@@ -2,6 +2,10 @@ package met.freehij.kareliq.util;
 
 import met.freehij.kareliq.ClientMain;
 import met.freehij.kareliq.injection.GuiButtonInjection;
+import met.freehij.loader.mappings.Creator;
+import met.freehij.loader.struct.GuiButton;
+import met.freehij.loader.struct.GuiScreen;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.ClassBuilder;
 import met.freehij.loader.util.InjectionHelper;
 import met.freehij.loader.util.Reflector;
@@ -74,10 +78,11 @@ public class BackgroundUtils {
 
     public static void actionPerformed(Object instance, Object[] args) {
         errorMessage = null;
-        Reflector reflector = new Reflector(args[0].getClass(), args[0]);
-        switch (reflector.getField("id").getInt()) {
+        GuiButton button = Creator.proxy(args[0], GuiButton.class);
+        
+        switch (button.id()) {
             case 0:
-                InjectionHelper.getMinecraft().invoke("displayGuiScreen", (Object) null);
+            	Minecraft.getMinecraft().displayGuiScreen(Creator.proxy(null, GuiScreen.class, false));
                 break;
             case 1:
                 fileName = "/gui/background.png";
@@ -91,11 +96,11 @@ public class BackgroundUtils {
                     errorMessage = "§cImage does not exist/format not supported.";
                     break;
                 }
-                InjectionHelper.getMinecraft().invoke("displayGuiScreen", (Object) null);
+                Minecraft.getMinecraft().displayGuiScreen(Creator.proxy(null, GuiScreen.class, false));
                 break;
             case 3:
                 GuiButtonInjection.buttonMode = (byte) (GuiButtonInjection.buttonMode == 0 ? 1 : 0);
-                reflector.setField("displayString", "Button style: " + buttonMode());
+                button.displayString("Button style: " + buttonMode());
                 ClientMain.saveBackgroundPath();
                 break;
         }

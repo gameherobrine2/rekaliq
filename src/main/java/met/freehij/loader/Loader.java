@@ -9,6 +9,9 @@ import met.freehij.loader.util.mappings.FieldMappings;
 import met.freehij.loader.util.mappings.MethodMappings;
 import met.freehij.loader.util.mappings.util.MethodMapping;
 import org.objectweb.asm.*;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.*;
 import java.lang.instrument.ClassFileTransformer;
@@ -25,12 +28,14 @@ import java.util.jar.JarFile;
 public class Loader {
     private static final Map<String, List<InjectionPoint>> injectionPoints = new HashMap<>();
     private static final String INJECTION_PACKAGE = "met.freehij.kareliq.injection";
-
+    static Instrumentation inst;
     public static void premain(String args, Instrumentation inst) {
+    	Loader.inst = inst;
         ClassMappings.initRefmap();
         MethodMappings.initRefmap();
         FieldMappings.initRefmap();
         scanForInjections();
+        inst.addTransformer(new MakeEverythingPublicTransformer(), true);
         inst.addTransformer(new MixinTransformer(), true);
         ClientMain.startClient();
     }
@@ -115,18 +120,6 @@ public class Loader {
         }
     }
 
-    private static Class<?> loadClass(String fullName) {
-        try {
-            return Class.forName(fullName, false, ClassLoader.getSystemClassLoader());
-        } catch (ClassNotFoundException e) {
-            ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
-            if (ctxLoader != null) try {
-                return Class.forName(fullName, false, ctxLoader);
-            } catch (ClassNotFoundException ignored) {}
-            return null;
-        }
-    }
-
     static class InjectionPoint {
         final String targetClass;
         final String methodName;
@@ -146,6 +139,39 @@ public class Loader {
         }
     }
 
+    static class MakeEverythingPublicTransformer implements ClassFileTransformer{
+    	@Override
+        public byte[] transform(ClassLoader l, String className, Class<?> c,
+                                ProtectionDomain d, byte[] buffer) {
+        	
+            ClassReader cr = new ClassReader(buffer);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
+            cr.accept(new ClassVisitor(Opcodes.ASM9, cw) {
+            	@Override
+            	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+            		access |= Opcodes.ACC_PRIVATE;
+                	access |= Opcodes.ACC_PROTECTED;
+                	access |= Opcodes.ACC_PUBLIC;
+                	access ^= Opcodes.ACC_PRIVATE;
+                	access ^= Opcodes.ACC_PROTECTED;
+            		return super.visitMethod(access, name, descriptor, signature, exceptions);
+            	}
+            	
+            	@Override
+            	public FieldVisitor visitField(int access, String name, String descriptor, String signature,
+            			Object value) {
+            		access |= Opcodes.ACC_PRIVATE;
+                	access |= Opcodes.ACC_PROTECTED;
+                	access |= Opcodes.ACC_PUBLIC;
+                	access ^= Opcodes.ACC_PRIVATE;
+                	access ^= Opcodes.ACC_PROTECTED;
+            		return super.visitField(access, name, descriptor, signature, value);
+            	}
+            }, 0);
+            return cw.toByteArray();
+        }
+    }
+    
     static class MixinTransformer implements ClassFileTransformer {
         @Override
         public byte[] transform(ClassLoader l, String className, Class<?> c,
@@ -177,6 +203,7 @@ public class Loader {
             for (InjectionPoint point : points) {
                 if (point.methodName.equals(name) && point.descriptor.equals(desc)) {
                     mv = new InjectionMethodVisitor(mv, access, desc, point);
+                    break;
                 }
             }
             return mv;

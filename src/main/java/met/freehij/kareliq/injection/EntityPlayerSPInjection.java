@@ -7,6 +7,9 @@ import met.freehij.kareliq.module.player.NoFallDamage;
 import met.freehij.kareliq.module.world.NoClip;
 import met.freehij.loader.annotation.Inject;
 import met.freehij.loader.annotation.Injection;
+import met.freehij.loader.mappings.Creator;
+import met.freehij.loader.struct.EntityPlayerSP;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 import org.lwjgl.input.Keyboard;
 
@@ -16,13 +19,14 @@ import java.util.List;
 public class EntityPlayerSPInjection {
     @Inject(method = "onLivingUpdate")
     public static void onLivingUpdate(InjectionHelper helper) throws ClassNotFoundException {
-        if (NoFallDamage.INSTANCE.isToggled()) helper.getSelf().setField("fallDistance", 0.F);
-        if (Step.INSTANCE.isToggled()) helper.getSelf().setField("stepHeight", (float) Step.INSTANCE.getSettingByName("height").getDouble());
-        if (helper.getSelf().getField("motionY").getDouble() < 0 && FastFall.INSTANCE.isToggled()) {
-            if (FastFall.INSTANCE.getSettings()[0].getBoolean() && Keyboard.isKeyDown(InjectionHelper.getMinecraft().getField("gameSettings").getField("keyBindJump").getField("keyCode").getInt())) {
+    	EntityPlayerSP sp = Creator.proxy(helper.getSelf().get(), EntityPlayerSP.class);
+        if (NoFallDamage.INSTANCE.isToggled()) sp.fallDistance(0);
+        if (Step.INSTANCE.isToggled()) sp.stepHeight((float) Step.INSTANCE.getSettingByName("height").getDouble());
+        if (sp.motionY() < 0 && FastFall.INSTANCE.isToggled()) {
+            if (FastFall.INSTANCE.getSettings()[0].getBoolean() && Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings().keyBindJump().keyCode())) {
 
             } else {
-                helper.getSelf().setField("motionY", -FastFall.INSTANCE.getSettings()[1].getDouble());
+            	sp.motionY(-FastFall.INSTANCE.getSettings()[1].getDouble());
             }
         }
         if (!Aura.INSTANCE.isToggled()) return;

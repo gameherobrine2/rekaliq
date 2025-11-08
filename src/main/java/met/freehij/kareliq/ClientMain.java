@@ -28,6 +28,7 @@ import met.freehij.kareliq.module.client.ModuleList;
 import met.freehij.kareliq.module.render.OreViewer;
 import met.freehij.kareliq.util.BackgroundUtils;
 import met.freehij.kareliq.util.NotificationUtils;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 import org.lwjgl.input.Keyboard;
 
@@ -196,6 +197,7 @@ public class ClientMain {
 
     public static void loadJsonConfig() {
         try {
+        	//evil freehij being too lazy to use json lib inside of b1.7.3 itself </3
             JsonObject config = JsonParser.parseString(new String(Files.readAllBytes(
                     Paths.get(configDir + configName.toLowerCase() + ".json")))).getAsJsonObject();
             name = config.get("name").getAsString();
@@ -231,6 +233,6 @@ public class ClientMain {
     }
 
     public static void addChatMessage(String message) {
-        InjectionHelper.getMinecraft().getField("ingameGUI").invoke("addChatMessage", message);
+    	Minecraft.getMinecraft().ingameGUI().addChatMessage(message);
     }
 }

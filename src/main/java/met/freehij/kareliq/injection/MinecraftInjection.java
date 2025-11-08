@@ -4,6 +4,9 @@ import met.freehij.kareliq.ClientMain;
 import met.freehij.loader.annotation.Inject;
 import met.freehij.loader.annotation.Injection;
 import met.freehij.loader.constant.At;
+import met.freehij.loader.mappings.Creator;
+import met.freehij.loader.struct.GuiScreen;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 import met.freehij.loader.util.Reflector;
 import met.freehij.loader.util.mappings.ClassMappings;
@@ -22,10 +25,11 @@ public class MinecraftInjection {
 
     @Inject(method = "runTick", at = At.RETURN)
     public static void runTick(InjectionHelper helper) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        if (helper.getSelf().getField("currentScreen").get() == null && !((boolean) helper.getSelf().invoke("isMultiplayerWorld").get())) {
+    	Minecraft mc = Minecraft.getMinecraft();
+        if (mc.currentScreen() == null && !mc.isMultiplayerWorld()) {
             Object keyBinding = ((Object[]) helper.getSelf().getField("gameSettings").getField("keyBindings").get())[8];
             if (Keyboard.isKeyDown((int) new Reflector(keyBinding.getClass(), keyBinding).getField("keyCode").get())) {
-                helper.getSelf().invoke("displayGuiScreen", InjectionHelper.getClazz("GuiChat").getActualClass().newInstance());
+            	mc.displayGuiScreen(Creator.proxy(InjectionHelper.getClazz("GuiChat").getActualClass().newInstance(), GuiScreen.class));
             }
         }
     }

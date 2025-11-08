@@ -1,41 +1,48 @@
 package met.freehij.loader.struct;
 
 import met.freehij.loader.mappings.ClassMapping;
+import met.freehij.loader.mappings.Creator;
 import met.freehij.loader.mappings.FieldMapping;
 import met.freehij.loader.mappings.MethodInvoker;
-import met.freehij.loader.mappings.RawAccess;
+import met.freehij.kareliq.ClientMain;
+import met.freehij.loader.mappings.AccessUtils;
 import met.freehij.loader.mappings.StaticFieldMapping;
 import met.freehij.loader.mappings.StaticMethodInvoker;
 
-@ClassMapping("met/freehij/loader/mappings/Cliff")
-public interface Minecraft extends RawAccess{
-	@StaticFieldMapping("theCliff")
+@ClassMapping("net/minecraft/client/Minecraft")
+public interface Minecraft extends AccessUtils{
+	
+	public static Minecraft getMinecraft() {
+		return Creator.proxy(null, Minecraft.class, false).theMinecraft();
+	}
+	
+	@StaticMethodInvoker("isDebugInfoEnabled")
+	public boolean isDebugInfoEnabled();
+	
+	@StaticFieldMapping("theMinecraft")
 	public Minecraft theMinecraft();
 	
-	@StaticFieldMapping("theCliff")
-	public Minecraft theMinecraft(Minecraft mc);
+	@FieldMapping("thePlayer")
+	public EntityPlayerSP thePlayer();
 	
-	@StaticFieldMapping("cliffstatic")
-	public short cliffStatic();
+	@FieldMapping("renderGlobal")
+	public RenderGlobal renderGlobal();
 	
-	@StaticFieldMapping("cliffstatic")
-	public short cliffStatic(short i);
-	
-	@FieldMapping("cliffCnt")
-	public int cliffCnt();
-	
-	@FieldMapping("cliffCnt")
-	public int cliffCnt(int i);
-	
-	@FieldMapping("parentCliff")
-	public Minecraft parentCliff();
+	@FieldMapping("gameSettings")
+	public GameSettings gameSettings();
 
-	@FieldMapping("parentCliff")
-	public Minecraft parentCliff(Minecraft mc);
+	@MethodInvoker("displayGuiScreen")
+	public void displayGuiScreen(GuiScreen screen);
+	@MethodInvoker("isMultiplayerWorld")
+	public boolean isMultiplayerWorld();
 	
-	@MethodInvoker("printCliff")
-	public void printCliff();
 	
-	@StaticMethodInvoker("printStaticCliff")
-	public void printStaticCliff();
+	@FieldMapping("fontRenderer")
+	public FontRenderer fontRenderer();
+	
+	@FieldMapping("currentScreen")
+	public GuiScreen currentScreen();
+	
+	@FieldMapping("ingameGUI")
+	public GuiIngame ingameGUI();
 }

@@ -7,20 +7,13 @@ public class FieldMappings {
     private static final Map<String, String> fieldRefmap = new HashMap<>();
 
     public static void initRefmap() {
-        add(ClassMappings.MINECRAFT, "theMinecraft", "Lnet/minecraft/client/Minecraft;",
-                "f_7951283", "theMinecraft", "a");
-        add(ClassMappings.MINECRAFT, "fontRenderer", "L" + ClassMappings.get("FontRenderer") + ";",
-                "f_0426313", "fontRenderer", "q");
-        add(ClassMappings.get("MovementInputFromOptions"), "movementKeyStates", "[Z",
-                "movementKeyStates", "f");
-        add(ClassMappings.get("MovementInputFromOptions"), "gameSettings", "L" + ClassMappings.get("GameSettings") + ";",
-                "gameSettings", "g");
-        add(ClassMappings.get("GameSettings"), "keyBindings", "[L" + ClassMappings.get("KeyBinding") + ";",
-                "keyBindings", "w");
-        add(ClassMappings.get("KeyBinding"), "keyCode", "I",
-                "keyCode", "b");
-        add(ClassMappings.MINECRAFT, "currentScreen", "L" + ClassMappings.get("GuiScreen") + ";",
-                "currentScreen", "r");
+        add(ClassMappings.MINECRAFT, "theMinecraft", "Lnet/minecraft/client/Minecraft;", "f_7951283", "theMinecraft", "a");
+        add(ClassMappings.MINECRAFT, "fontRenderer", "L" + ClassMappings.get("FontRenderer") + ";", "f_0426313", "fontRenderer", "q");
+        add(ClassMappings.get("MovementInputFromOptions"), "movementKeyStates", "[Z", "movementKeyStates", "f");
+        add(ClassMappings.get("MovementInputFromOptions"), "gameSettings", "L" + ClassMappings.get("GameSettings") + ";", "gameSettings", "g");
+        add(ClassMappings.get("GameSettings"), "keyBindings", "[L" + ClassMappings.get("KeyBinding") + ";", "keyBindings", "w");
+        add(ClassMappings.get("KeyBinding"), "keyCode", "I", "keyCode", "b");
+        add(ClassMappings.MINECRAFT, "currentScreen", "L" + ClassMappings.get("GuiScreen") + ";", "currentScreen", "r");
         add(ClassMappings.MINECRAFT, "gameSettings", "L" + ClassMappings.get("GameSettings") + ";",
                 "gameSettings", "z");
         add(ClassMappings.MINECRAFT, "displayWidth", "I",

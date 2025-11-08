@@ -1,7 +1,7 @@
 package met.freehij.kareliq.command.commands;
 
 import met.freehij.kareliq.command.Command;
-import met.freehij.loader.util.InjectionHelper;
+import met.freehij.loader.struct.Minecraft;
 
 public class PitchCommand extends Command {
     public PitchCommand() {
@@ -12,7 +12,7 @@ public class PitchCommand extends Command {
     public boolean execute(String[] args) {
         if (args.length < 1) return false;
         try {
-            InjectionHelper.getMinecraft().getField("thePlayer").setField("rotationPitch", Float.parseFloat(args[0]));
+        	Minecraft.getMinecraft().thePlayer().rotationPitch(Float.parseFloat(args[0]));
         } catch (NumberFormatException ignored) {
             return false;
         }

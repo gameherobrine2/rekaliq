@@ -1,6 +1,7 @@
 package met.freehij.kareliq.command.commands;
 
 import met.freehij.kareliq.command.Command;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 
 public class YawCommand extends Command {
@@ -12,7 +13,7 @@ public class YawCommand extends Command {
     public boolean execute(String[] args) {
         if (args.length < 1) return false;
         try {
-            InjectionHelper.getMinecraft().getField("thePlayer").setField("rotationYaw", Float.parseFloat(args[0]));
+        	Minecraft.getMinecraft().thePlayer().rotationYaw(Float.parseFloat(args[0]));
         } catch (NumberFormatException ignored) {
             return false;
         }

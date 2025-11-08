@@ -4,6 +4,7 @@ import met.freehij.kareliq.ClientMain;
 import met.freehij.kareliq.module.Module;
 import met.freehij.kareliq.module.Setting;
 import met.freehij.kareliq.module.SettingSlider;
+import met.freehij.loader.struct.Minecraft;
 import met.freehij.loader.util.InjectionHelper;
 import org.lwjgl.input.Keyboard;
 
@@ -18,13 +19,13 @@ public class Brightness extends Module {
 
     @Override
     public void toggle() {
-        if (ClientMain.loaded) InjectionHelper.getMinecraft().getField("renderGlobal").invoke("loadRenderers");
+        if (ClientMain.loaded) Minecraft.getMinecraft().renderGlobal().loadRenderers();
         super.toggle();
     }
 
     @Override
     public void onSettingChange(Setting setting) {
         if (ClientMain.loaded && this.isToggled())
-            InjectionHelper.getMinecraft().getField("renderGlobal").invoke("loadRenderers");
+        	Minecraft.getMinecraft().renderGlobal().loadRenderers();
     }
 }
